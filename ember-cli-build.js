@@ -27,19 +27,18 @@ module.exports = function(defaults) {
         ],
       });
 
-      let otherApp = concat(headerTree, {
+      let headerApp = concat(headerTree, {
         allowNone: true,
         outputFile: 'assets/headerapp.js',
         wrapInFunction: false,
         sourceMapConfig: { enabled: true }
       });
 
-      let debugOtherApp = debug(otherApp, { name: 'otherApp-tree' });
+      let splitApp = this.concatFiles(tree, options, 'SECRET_DEPRECATION_PREVENTION_SYMBOL', { name: 'additionalTrees-tree' });
 
-      let debugTrees = debug(tree, { name: 'additionalTrees-tree' })
       return mergeTrees([
-        this.concatFiles(debugTrees, options, 'SECRET_DEPRECATION_PREVENTION_SYMBOL'),
-        otherApp,
+        splitApp,
+        headerApp
       ], {
         overwrite: true,
         annotation: 'TreeMerger (appAndDependencies)'
@@ -48,48 +47,6 @@ module.exports = function(defaults) {
     }
     return this.concatFiles(tree, options, 'SECRET_DEPRECATION_PREVENTION_SYMBOL');
   };
-
-
-  // app._concatFiles = function(tree, options) {
-  //   console.log('asjfdlaskjf');
-  //   if (options && options.annotation === 'Concat: App') {
-  //     options.sourcemaps= {
-  //       enabled: true
-  //     }
-  //
-  //     console.log('options', options);
-  //
-  //     // var allFeatureFiles = _allFeatureFilesToStripFromApp(app, tree);
-  //     //
-  //     // // Exclude modules that should be removed from the build.
-  //     // var appTree = funnel(tree, {
-  //     //   exclude: allFeatureFiles
-  //     // });
-  //
-  //     // Concat the main app files.
-  //     // let concattedAppTree = concat(app, options);
-  //     //
-  //     // let debugconcattedAppTree = debug(concattedAppTree, {name: 'concattedAppTree'})
-  //     //
-  //     // let concattedFeaturesTree = _buildStripedBuildsFiles(app, tree, originalConcatFiles);
-  //     //
-  //     // let debugconcattedFeaturesTree = debug(concattedFeaturesTree, { name: 'concattedFeaturesTree' })
-  //     //
-  //     // return mergeTrees([concattedAppTree, debugconcattedFeaturesTree].filter(Boolean));
-  //   }
-  //
-  //   // return originalConcatFiles.apply(this, arguments);
-  // };
-
-  // app.toTree = function(additionalTrees) {
-  //   let debugTrees = debug(additionalTrees, { name: 'additionalTrees-tree' });
-  //   let tree = mergeTrees(this.toArray().concat(debugTrees || []), {
-  //     overwrite: true,
-  //     annotation: 'TreeMerger (allTrees)'
-  //   });
-  //
-  //   return app.addonPostprocessTree('all', tree);
-  // };
 
   return app.toTree();
 };
