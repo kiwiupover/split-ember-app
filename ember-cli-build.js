@@ -9,7 +9,7 @@ const debug = require('broccoli-stew').debug;
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
-    // Add options here
+    storeConfigInMeta: false
   });
 
   app._concatFiles = function(tree, options) {
@@ -18,23 +18,45 @@ module.exports = function(defaults) {
         enabled: true
       }
 
-      let headerTree = new Funnel(tree, {
+      let debugTree = debug(tree, { name: 'debugTree'});
+
+      let headerTree = new Funnel(debugTree, {
         include: [
+          'split-app/helpers/**.*',
+          'split-app/initializers/**.*',
+          'split-app/instance-initializers/**.*',
+          'split-app/services/**.*',
           'split-app/components/header-nav/*',
+          'split-app/templates/application.*',
           'split-app/app.js',
           'split-app/resolver.js',
-          'split-app/router.js'
+          'split-app/router.js',
+          'vendor/ember-cli/app-prefix.js',
+          'vendor/ember-cli/app-suffix.js',
+          'vendor/ember-cli/app-config.js',
+          'vendor/ember-cli/app-boot.js'
         ],
       });
 
-      let headerApp = concat(headerTree, {
+      let debugHeaderTree = debug(headerTree, { name: 'debugHeaderTree'});
+
+      let headerApp = concat(debugHeaderTree, {
         allowNone: true,
         outputFile: 'assets/headerapp.js',
         wrapInFunction: false,
-        sourceMapConfig: { enabled: true }
+        sourceMapConfig: { enabled: true },
+        inputFiles: [app.name + '/**/*.js'],
+        headerFiles: [
+          'vendor/ember-cli/app-prefix.js'
+        ],
+        footerFiles: [
+          'vendor/ember-cli/app-suffix.js',
+          'vendor/ember-cli/app-config.js',
+          'vendor/ember-cli/app-boot.js'
+        ]
       });
 
-      let splitApp = this.concatFiles(tree, options, 'SECRET_DEPRECATION_PREVENTION_SYMBOL', { name: 'additionalTrees-tree' });
+      let splitApp = concat(tree, options);
 
       return mergeTrees([
         splitApp,
