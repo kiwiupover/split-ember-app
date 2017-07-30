@@ -9,8 +9,41 @@ const WatchedDir = require('broccoli-source').WatchedDir;
 const p = require('ember-cli-preprocess-registry/preprocessors');
 
 const preprocessTemplates = p.preprocessTemplates;
+const preprocessJs  = p.preprocessJs;
 
 const debug = require('broccoli-stew').debug;
+
+const templatesTree = function(app, name) {
+
+  var trees = [];
+  if (app.trees.templates) {
+    var standardTemplates = new Funnel(app.trees.templates, {
+      srcDir: '/',
+      destDir: name + '/templates',
+      annotation: 'Funnel: Templates'
+    });
+
+    trees.push(standardTemplates);
+  }
+
+  if (app.trees.app) {
+    trees.push(podTemplates(app, name));
+  }
+
+  return mergeTrees(trees.filter(Boolean), {
+    annotation: 'TreeMerge (templates)'
+  });
+};
+
+const podTemplates = function(app, name) {
+  return new Funnel(app.trees.app, {
+    include: app._podTemplatePatterns(),
+    exclude: [ 'templates/**/*' ],
+    destDir: name + '/',
+    annotation: 'Funnel: Pod Templates'
+  });
+};
+
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
@@ -25,20 +58,24 @@ module.exports = function(defaults) {
 
       let headerAppFiles = new WatchedDir(app._resolveLocal('headerapp'));
 
-      let templates = new Funnel(headerAppFiles, {
-        include: ['**/template.hbs']
-      });
+      let headerappTemplatesTree = templatesTree(app, 'headerapp');
+      let debugheaderappTemplatesTree = debug(headerappTemplatesTree, { name: 'headerappTemplatesTree'});
 
-      let processTemplates = preprocessTemplates(templates, {
+      let processTemplates = preprocessTemplates(new Funnel(debugheaderappTemplatesTree, {
+        srcDir: 'headerapp',
+      }), {
         registry: app.registry,
         annotation: 'TreeMerger (pod & standard templates)'
       });
 
-      let headerapptrees = mergeTrees([headerAppFiles, processTemplates], {
+      let debugApp = debug(processTemplates, { name: 'processTemplates'});
+
+      let headerapptrees = mergeTrees([headerAppFiles, debugApp], {
         overwrite: true
       });
 
       let headerAppFilesBabel = new Babel(new Funnel(headerapptrees, {
+        include: ['**/*.js'],
         srcDir: '/',
         destDir: 'headerapp',
         annotation: 'Funnel (headerapp)'
@@ -47,7 +84,9 @@ module.exports = function(defaults) {
 
       let debugHeaderApp = debug(headerAppFilesBabel, { name: 'headerAppFilesBabel'});
 
-      let mt  = mergeTrees([debugHeaderApp, tree]);
+      let mt = mergeTrees([debugHeaderApp, tree], {
+        overwrite: true
+      });
 
       let debugTree = debug(mt, { name: 'mt'});
 
@@ -59,7 +98,7 @@ module.exports = function(defaults) {
           'split-app/services/**.*',
           'split-app/components/header-nav/*',
           'split-app/templates/application.*',
-          'split-app/app.js',
+          'headerapp/app.js',
           'split-app/resolver.js',
           'split-app/router.js',
           'vendor/ember-cli/app-prefix.js',
@@ -78,7 +117,6 @@ module.exports = function(defaults) {
         wrapInFunction: false,
         sourceMapConfig: { enabled: true },
         inputFiles: [
-          app.name + '/**/*.js',
           'headerapp' + '/**/*.js'
         ],
         headerFiles: [
