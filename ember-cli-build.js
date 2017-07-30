@@ -4,6 +4,11 @@ const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const mergeTrees = require('broccoli-merge-trees');
 const concat = require('broccoli-concat');
 const Funnel = require('broccoli-funnel');
+const Babel  = require('broccoli-babel-transpiler');
+const WatchedDir = require('broccoli-source').WatchedDir;
+const p = require('ember-cli-preprocess-registry/preprocessors');
+
+const preprocessTemplates = p.preprocessTemplates;
 
 const debug = require('broccoli-stew').debug;
 
@@ -18,7 +23,33 @@ module.exports = function(defaults) {
         enabled: true
       }
 
-      let debugTree = debug(tree, { name: 'debugTree'});
+      let headerAppFiles = new WatchedDir(app._resolveLocal('headerapp'));
+
+      let templates = new Funnel(headerAppFiles, {
+        include: ['**/template.hbs']
+      });
+
+      let processTemplates = preprocessTemplates(templates, {
+        registry: app.registry,
+        annotation: 'TreeMerger (pod & standard templates)'
+      });
+
+      let headerapptrees = mergeTrees([headerAppFiles, processTemplates], {
+        overwrite: true
+      });
+
+      let headerAppFilesBabel = new Babel(new Funnel(headerapptrees, {
+        srcDir: '/',
+        destDir: 'headerapp',
+        annotation: 'Funnel (headerapp)'
+      }), this._prunedBabelOptions());
+
+
+      let debugHeaderApp = debug(headerAppFilesBabel, { name: 'headerAppFilesBabel'});
+
+      let mt  = mergeTrees([debugHeaderApp, tree]);
+
+      let debugTree = debug(mt, { name: 'mt'});
 
       let headerTree = new Funnel(debugTree, {
         include: [
@@ -36,6 +67,7 @@ module.exports = function(defaults) {
           'vendor/ember-cli/app-config.js',
           'vendor/ember-cli/app-boot.js'
         ],
+        overwrite: true
       });
 
       let debugHeaderTree = debug(headerTree, { name: 'debugHeaderTree'});
@@ -45,7 +77,10 @@ module.exports = function(defaults) {
         outputFile: 'assets/headerapp.js',
         wrapInFunction: false,
         sourceMapConfig: { enabled: true },
-        inputFiles: [app.name + '/**/*.js'],
+        inputFiles: [
+          app.name + '/**/*.js',
+          'headerapp' + '/**/*.js'
+        ],
         headerFiles: [
           'vendor/ember-cli/app-prefix.js'
         ],
