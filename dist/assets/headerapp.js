@@ -114,7 +114,7 @@ define('split-app/initializers/data-adapter', ['exports'], function (exports) {
     initialize: function initialize() {}
   };
 });
-define('split-app/initializers/ember-data', ['exports', 'ember-data/setup-container', 'ember-data/index'], function (exports, _emberDataSetupContainer, _emberDataIndex) {
+define('split-app/initializers/ember-data', ['exports', 'ember-data/setup-container', 'ember-data'], function (exports, _emberDataSetupContainer, _emberData) {
 
   /*
   
@@ -267,7 +267,7 @@ define('split-app/services/ajax', ['exports', 'ember-ajax/services/ajax'], funct
 /* jshint ignore:start */
 
 define('split-app/config/environment', ['ember'], function(Ember) {
-  var exports = {'default': {"modulePrefix":"split-app","environment":"development","rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"split-app","version":"0.0.0+57ac3cfe"},"exportApplicationGlobal":true}};Object.defineProperty(exports, '__esModule', {value: true});return exports;
+  var exports = {'default': {"modulePrefix":"split-app","environment":"development","rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"split-app","version":"0.0.0+450f0f6e"},"exportApplicationGlobal":true}};Object.defineProperty(exports, '__esModule', {value: true});return exports;
 });
 
 /* jshint ignore:end */
@@ -275,7 +275,7 @@ define('split-app/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("split-app/app")["default"].create({"name":"split-app","version":"0.0.0+57ac3cfe"});
+  require("split-app/app")["default"].create({"name":"split-app","version":"0.0.0+450f0f6e"});
 }
 
 /* jshint ignore:end */

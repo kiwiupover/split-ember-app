@@ -7,12 +7,14 @@
 /* jshint ignore:end */
 
 define('split-app/app', ['exports', 'ember', 'split-app/resolver', 'ember-load-initializers', 'split-app/config/environment'], function (exports, _ember, _splitAppResolver, _emberLoadInitializers, _splitAppConfigEnvironment) {
+  'use strict';
 
   var App = undefined;
 
   _ember['default'].MODEL_FACTORY_INJECTIONS = true;
 
   App = _ember['default'].Application.extend({
+    rootElement: '#lyrv-app',
     modulePrefix: _splitAppConfigEnvironment['default'].modulePrefix,
     podModulePrefix: _splitAppConfigEnvironment['default'].podModulePrefix,
     Resolver: _splitAppResolver['default']
@@ -22,17 +24,22 @@ define('split-app/app', ['exports', 'ember', 'split-app/resolver', 'ember-load-i
 
   exports['default'] = App;
 });
-define('split-app/components/book-ends/component', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Component.extend({});
+define('split-app/router', ['exports', 'ember', 'split-app/config/environment'], function (exports, _ember, _splitAppConfigEnvironment) {
+  'use strict';
+
+  var Router = _ember['default'].Router.extend({
+    location: 'none',
+    rootURL: _splitAppConfigEnvironment['default'].rootURL
+  });
+
+  Router.map(function () {});
+
+  exports['default'] = Router;
 });
-define("split-app/components/book-ends/template", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template({ "id": "7OhrU+ot", "block": "{\"statements\":[[\"text\",\"jflaskfdafdajfd;lsajfds;lafdasjf;dsa;skda;sdjfsa\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/components/book-ends/template.hbs" } });
-});
-define('split-app/components/header-nav/component', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Component.extend({});
-});
-define("split-app/components/header-nav/template", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template({ "id": "cGRfzAiS", "block": "{\"statements\":[[\"open-element\",\"h1\",[]],[\"flush-element\"],[\"text\",\"HEADER HEADER HEADER\"],[\"close-element\"],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/components/header-nav/template.hbs" } });
+define("split-app/templates/application", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template({ "id": "lFDMjAPQ", "block": "{\"statements\":[[\"append\",[\"unknown\",[\"book-ends\"]],false],[\"text\",\"\\n\\n\"],[\"open-element\",\"h3\",[]],[\"flush-element\"],[\"text\",\"List your RV\"],[\"close-element\"],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "templates/application.hbs" } });
 });
 define('split-app/helpers/app-version', ['exports', 'ember', 'split-app/config/environment', 'ember-cli-app-version/utils/regexp'], function (exports, _ember, _splitAppConfigEnvironment, _emberCliAppVersionUtilsRegexp) {
   exports.appVersion = appVersion;
@@ -231,22 +238,6 @@ define("split-app/instance-initializers/ember-data", ["exports", "ember-data/ins
 define('split-app/resolver', ['exports', 'ember-resolver'], function (exports, _emberResolver) {
   exports['default'] = _emberResolver['default'];
 });
-define('split-app/router', ['exports', 'ember', 'split-app/config/environment'], function (exports, _ember, _splitAppConfigEnvironment) {
-
-  var Router = _ember['default'].Router.extend({
-    location: 'auto',
-    rootURL: _splitAppConfigEnvironment['default'].rootURL
-  });
-
-  Router.map(function () {
-    this.route('details');
-  });
-
-  exports['default'] = Router;
-});
-define('split-app/routes/details', ['exports', 'ember'], function (exports, _ember) {
-  exports['default'] = _ember['default'].Route.extend({});
-});
 define('split-app/services/ajax', ['exports', 'ember-ajax/services/ajax'], function (exports, _emberAjaxServicesAjax) {
   Object.defineProperty(exports, 'default', {
     enumerable: true,
@@ -254,12 +245,6 @@ define('split-app/services/ajax', ['exports', 'ember-ajax/services/ajax'], funct
       return _emberAjaxServicesAjax['default'];
     }
   });
-});
-define("split-app/templates/application", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template({ "id": "B5Xw8b7L", "block": "{\"statements\":[[\"append\",[\"unknown\",[\"header-nav\"]],false],[\"text\",\"\\n\"],[\"append\",[\"unknown\",[\"book-ends\"]],false],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/templates/application.hbs" } });
-});
-define("split-app/templates/details", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template({ "id": "Hpu6zxE7", "block": "{\"statements\":[[\"append\",[\"unknown\",[\"outlet\"]],false],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/templates/details.hbs" } });
 });
 /* jshint ignore:start */
 
@@ -282,4 +267,4 @@ if (!runningTests) {
 }
 
 /* jshint ignore:end */
-//# sourceMappingURL=split-app.map
+//# sourceMappingURL=lyrvapp.map

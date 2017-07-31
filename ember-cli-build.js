@@ -37,7 +37,7 @@ const templatesTree = function(app, tree, name) {
   });
 };
 
-const podTemplates = function(app,tree,  name) {
+const podTemplates = function(app, tree, name) {
   return new Funnel(tree, {
     include: app._podTemplatePatterns(),
     exclude: [ 'templates/**/*' ],
@@ -46,6 +46,48 @@ const podTemplates = function(app,tree,  name) {
   });
 };
 
+const buildFeatureApps = function(feature, app, tree) {
+  let featureAppFiles = new WatchedDir(app._resolveLocal(feature));
+  let templates = templatesTree(app, featureAppFiles, 'split-app');
+  let processTemplates = preprocessTemplates(new Funnel(templates, {
+    srcDir: 'split-app/templates',
+  }), {
+    registry: app.registry,
+    annotation: 'TreeMerger (pod & standard templates)'
+  });
+
+  let appFilesBabel = new Babel(new Funnel(processTemplates, {
+    include: ['**/*.js'],
+    srcDir: '/',
+    destDir: 'split-app',
+    annotation: 'Funnel (' + feature + ')'
+  }), app._prunedBabelOptions());
+
+  let featureFolder = rename(appFilesBabel, 'split-app', feature);
+  let mergedFiles = mergeTrees([featureFolder, tree]);
+  let headerTree = new Funnel(mergedFiles, {
+    include: featureApps[feature]
+  });
+
+  return headerApp = concat(headerTree, {
+    allowNone: true,
+    outputFile: 'assets/' + feature + '.js',
+    wrapInFunction: false,
+    sourceMapConfig: { enabled: true },
+    inputFiles: [
+      'split-app' + '/**/*.js',
+      feature + '/**/*.js'
+    ],
+    headerFiles: [
+      'vendor/ember-cli/app-prefix.js'
+    ],
+    footerFiles: [
+      'vendor/ember-cli/app-suffix.js',
+      'vendor/ember-cli/app-config.js',
+      'vendor/ember-cli/app-boot.js'
+    ]
+  });
+}
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
@@ -58,84 +100,18 @@ module.exports = function(defaults) {
         enabled: true
       }
 
-      let keys = Object.keys(featureApps);
-      
-      Object.keys(featureApps).map(app=> {
-        console.log('app-suffix', app-suffix);
-      });
-
-
-      let headerAppFiles = new WatchedDir(app._resolveLocal('headerapp'));
-
-      let headerappTemplatesTree = templatesTree(app, headerAppFiles, 'split-app');
-
-      let processTemplates = preprocessTemplates(new Funnel(headerappTemplatesTree, {
-        srcDir: 'split-app/templates',
-      }), {
-        registry: app.registry,
-        annotation: 'TreeMerger (pod & standard templates)'
-      });
-
-      let headerAppFilesBabel = new Babel(new Funnel(processTemplates, {
-        include: ['**/*.js'],
-        srcDir: '/',
-        destDir: 'split-app',
-        annotation: 'Funnel (headerapp)'
-      }), this._prunedBabelOptions());
-
-      let renameFolder = rename(headerAppFilesBabel, 'split-app', 'headerapp');
-
-      let mergedFiles = mergeTrees([renameFolder, tree], {
-        overwrite: true
-      });
-
-      let headerTree = new Funnel(mergedFiles, {
-        include: [
-          'split-app/helpers/**.*',
-          'split-app/initializers/**.*',
-          'split-app/instance-initializers/**.*',
-          'split-app/services/**.*',
-          'headerapp/templates/application.js',
-          'headerapp/app.js',
-          'headerapp/router.js',
-          'headerapp/components/book-ends/*',
-          'split-app/resolver.js',
-          'vendor/ember-cli/app-prefix.js',
-          'vendor/ember-cli/app-suffix.js',
-          'vendor/ember-cli/app-config.js',
-          'vendor/ember-cli/app-boot.js'
-        ]
-      });
-
-      let debugHeaderTree = debug(headerTree, { name: 'd-debugHeaderTree'});
-
-      let headerApp = concat(debugHeaderTree, {
-        allowNone: true,
-        outputFile: 'assets/headerapp.js',
-        wrapInFunction: false,
-        sourceMapConfig: { enabled: true },
-        inputFiles: [
-          'split-app' + '/**/*.js',
-          'headerapp' + '/**/*.js'
-        ],
-        headerFiles: [
-          'vendor/ember-cli/app-prefix.js'
-        ],
-        footerFiles: [
-          'vendor/ember-cli/app-suffix.js',
-          'vendor/ember-cli/app-config.js',
-          'vendor/ember-cli/app-boot.js'
-        ]
-      });
-
       let splitApp = concat(tree, options);
+
+      let builtFeatureApps = Object.keys(featureApps).map(feature => {
+        return buildFeatureApps(feature, app, tree);
+      });
 
       return mergeTrees([
         splitApp,
-        headerApp
+        mergeTrees(builtFeatureApps)
       ], {
         overwrite: true,
-        annotation: 'TreeMerger (appAndDependencies)'
+        annotation: 'TreeMerger (featureApps)'
       });
 
     }

@@ -7870,6 +7870,30 @@ define('ember-qunit', ['exports', 'ember-qunit/module-for', 'ember-qunit/module-
 define('ember-qunit/adapter', ['exports', 'ember', 'qunit'], function (exports, _ember, _qunit) {
   'use strict';
 
+  function unhandledRejectionAssertion(current, error) {
+    var message = undefined,
+        source = undefined;
+
+    if (typeof error === 'object' && error !== null) {
+      message = error.message;
+      source = error.stack;
+    } else if (typeof error === "string") {
+      message = error;
+      source = "unknown source";
+    } else {
+      message = "unhandledRejection occured, but it had no message";
+      source = "unknown source";
+    }
+
+    current.pushResult({
+      result: false,
+      actual: false,
+      expected: true,
+      message: message,
+      source: source
+    });
+  }
+
   exports['default'] = _ember['default'].Test.Adapter.extend({
     init: function init() {
       this.doneCallbacks = [];
@@ -7888,7 +7912,7 @@ define('ember-qunit/adapter', ['exports', 'ember', 'qunit'], function (exports, 
     },
 
     exception: function exception(error) {
-      _qunit['default'].config.current.assert.ok(false, _ember['default'].inspect(error));
+      unhandledRejectionAssertion(_qunit['default'].config.current, error);
     }
   });
 });
