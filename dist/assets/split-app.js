@@ -234,7 +234,7 @@ define('split-app/resolver', ['exports', 'ember-resolver'], function (exports, _
 define('split-app/router', ['exports', 'ember', 'split-app/config/environment'], function (exports, _ember, _splitAppConfigEnvironment) {
 
   var Router = _ember['default'].Router.extend({
-    location: 'none',
+    location: 'auto',
     rootURL: _splitAppConfigEnvironment['default'].rootURL
   });
 
@@ -256,7 +256,7 @@ define('split-app/services/ajax', ['exports', 'ember-ajax/services/ajax'], funct
   });
 });
 define("split-app/templates/application", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template({ "id": "VwZQxKcw", "block": "{\"statements\":[[\"append\",[\"unknown\",[\"header-nav\"]],false],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/templates/application.hbs" } });
+  exports["default"] = Ember.HTMLBars.template({ "id": "B5Xw8b7L", "block": "{\"statements\":[[\"append\",[\"unknown\",[\"header-nav\"]],false],[\"text\",\"\\n\"],[\"append\",[\"unknown\",[\"book-ends\"]],false],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/templates/application.hbs" } });
 });
 define("split-app/templates/details", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template({ "id": "Hpu6zxE7", "block": "{\"statements\":[[\"append\",[\"unknown\",[\"outlet\"]],false],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/templates/details.hbs" } });
@@ -270,7 +270,7 @@ define("split-app/templates/details", ["exports"], function (exports) {
 /* jshint ignore:start */
 
 define('split-app/config/environment', ['ember'], function(Ember) {
-  var exports = {'default': {"modulePrefix":"split-app","environment":"development","rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"split-app","version":"0.0.0+c3cc4e14"},"exportApplicationGlobal":true}};Object.defineProperty(exports, '__esModule', {value: true});return exports;
+  var exports = {'default': {"modulePrefix":"split-app","environment":"development","rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"split-app","version":"0.0.0+57ac3cfe"},"exportApplicationGlobal":true}};Object.defineProperty(exports, '__esModule', {value: true});return exports;
 });
 
 /* jshint ignore:end */
@@ -278,7 +278,7 @@ define('split-app/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("split-app/app")["default"].create({"name":"split-app","version":"0.0.0+c3cc4e14"});
+  require("split-app/app")["default"].create({"name":"split-app","version":"0.0.0+57ac3cfe"});
 }
 
 /* jshint ignore:end */

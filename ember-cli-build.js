@@ -12,12 +12,14 @@ const preprocessTemplates = p.preprocessTemplates;
 const preprocessJs  = p.preprocessJs;
 
 const debug = require('broccoli-stew').debug;
+const rename = require('broccoli-stew').rename;
 
-const templatesTree = function(app, name) {
+const featureApps = require('./config/feature-apps');
 
+const templatesTree = function(app, tree, name) {
   var trees = [];
-  if (app.trees.templates) {
-    var standardTemplates = new Funnel(app.trees.templates, {
+  if (tree) {
+    var standardTemplates = new Funnel(tree, {
       srcDir: '/',
       destDir: name + '/templates',
       annotation: 'Funnel: Templates'
@@ -26,8 +28,8 @@ const templatesTree = function(app, name) {
     trees.push(standardTemplates);
   }
 
-  if (app.trees.app) {
-    trees.push(podTemplates(app, name));
+  if (tree) {
+    trees.push(podTemplates(app, tree, name));
   }
 
   return mergeTrees(trees.filter(Boolean), {
@@ -35,8 +37,8 @@ const templatesTree = function(app, name) {
   });
 };
 
-const podTemplates = function(app, name) {
-  return new Funnel(app.trees.app, {
+const podTemplates = function(app,tree,  name) {
+  return new Funnel(tree, {
     include: app._podTemplatePatterns(),
     exclude: [ 'templates/**/*' ],
     destDir: name + '/',
@@ -56,60 +58,56 @@ module.exports = function(defaults) {
         enabled: true
       }
 
+      let keys = Object.keys(featureApps);
+      
+      Object.keys(featureApps).map(app=> {
+        console.log('app-suffix', app-suffix);
+      });
+
+
       let headerAppFiles = new WatchedDir(app._resolveLocal('headerapp'));
 
-      let headerappTemplatesTree = templatesTree(app, 'headerapp');
-      let debugheaderappTemplatesTree = debug(headerappTemplatesTree, { name: 'headerappTemplatesTree'});
+      let headerappTemplatesTree = templatesTree(app, headerAppFiles, 'split-app');
 
-      let processTemplates = preprocessTemplates(new Funnel(debugheaderappTemplatesTree, {
-        srcDir: 'headerapp',
+      let processTemplates = preprocessTemplates(new Funnel(headerappTemplatesTree, {
+        srcDir: 'split-app/templates',
       }), {
         registry: app.registry,
         annotation: 'TreeMerger (pod & standard templates)'
       });
 
-      let debugApp = debug(processTemplates, { name: 'processTemplates'});
-
-      let headerapptrees = mergeTrees([headerAppFiles, debugApp], {
-        overwrite: true
-      });
-
-      let headerAppFilesBabel = new Babel(new Funnel(headerapptrees, {
+      let headerAppFilesBabel = new Babel(new Funnel(processTemplates, {
         include: ['**/*.js'],
         srcDir: '/',
-        destDir: 'headerapp',
+        destDir: 'split-app',
         annotation: 'Funnel (headerapp)'
       }), this._prunedBabelOptions());
 
+      let renameFolder = rename(headerAppFilesBabel, 'split-app', 'headerapp');
 
-      let debugHeaderApp = debug(headerAppFilesBabel, { name: 'headerAppFilesBabel'});
-
-      let mt = mergeTrees([debugHeaderApp, tree], {
+      let mergedFiles = mergeTrees([renameFolder, tree], {
         overwrite: true
       });
 
-      let debugTree = debug(mt, { name: 'mt'});
-
-      let headerTree = new Funnel(debugTree, {
+      let headerTree = new Funnel(mergedFiles, {
         include: [
           'split-app/helpers/**.*',
           'split-app/initializers/**.*',
           'split-app/instance-initializers/**.*',
           'split-app/services/**.*',
-          'split-app/components/header-nav/*',
-          'split-app/templates/application.*',
+          'headerapp/templates/application.js',
           'headerapp/app.js',
+          'headerapp/router.js',
+          'headerapp/components/book-ends/*',
           'split-app/resolver.js',
-          'split-app/router.js',
           'vendor/ember-cli/app-prefix.js',
           'vendor/ember-cli/app-suffix.js',
           'vendor/ember-cli/app-config.js',
           'vendor/ember-cli/app-boot.js'
-        ],
-        overwrite: true
+        ]
       });
 
-      let debugHeaderTree = debug(headerTree, { name: 'debugHeaderTree'});
+      let debugHeaderTree = debug(headerTree, { name: 'd-debugHeaderTree'});
 
       let headerApp = concat(debugHeaderTree, {
         allowNone: true,
@@ -117,6 +115,7 @@ module.exports = function(defaults) {
         wrapInFunction: false,
         sourceMapConfig: { enabled: true },
         inputFiles: [
+          'split-app' + '/**/*.js',
           'headerapp' + '/**/*.js'
         ],
         headerFiles: [
