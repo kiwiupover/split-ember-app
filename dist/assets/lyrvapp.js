@@ -6,7 +6,7 @@
 
 /* jshint ignore:end */
 
-define('split-app/app', ['exports', 'ember', 'split-app/resolver', 'ember-load-initializers', 'split-app/config/environment'], function (exports, _ember, _splitAppResolver, _emberLoadInitializers, _splitAppConfigEnvironment) {
+define('lyrvapp/app', ['exports', 'ember', 'lyrvapp/resolver', 'ember-load-initializers'], function (exports, _ember, _lyrvappResolver, _emberLoadInitializers) {
   'use strict';
 
   var App = undefined;
@@ -15,34 +15,36 @@ define('split-app/app', ['exports', 'ember', 'split-app/resolver', 'ember-load-i
 
   App = _ember['default'].Application.extend({
     rootElement: '#lyrv-app',
-    modulePrefix: _splitAppConfigEnvironment['default'].modulePrefix,
-    podModulePrefix: _splitAppConfigEnvironment['default'].podModulePrefix,
-    Resolver: _splitAppResolver['default']
+    modulePrefix: 'lyrvapp',
+    podModulePrefix: 'lyrvapp',
+    Resolver: _lyrvappResolver['default']
   });
 
-  (0, _emberLoadInitializers['default'])(App, _splitAppConfigEnvironment['default'].modulePrefix);
+  (0, _emberLoadInitializers['default'])(App, 'lyrvapp');
 
   exports['default'] = App;
 });
-define('split-app/router', ['exports', 'ember', 'split-app/config/environment'], function (exports, _ember, _splitAppConfigEnvironment) {
+define('lyrvapp/resolver', ['exports', 'ember-resolver'], function (exports, _emberResolver) {
+  'use strict';
+
+  exports['default'] = _emberResolver['default'];
+});
+define('lyrvapp/router', ['exports', 'ember', 'lyrvapp/config/environment'], function (exports, _ember, _lyrvappConfigEnvironment) {
   'use strict';
 
   var Router = _ember['default'].Router.extend({
     location: 'none',
-    rootURL: _splitAppConfigEnvironment['default'].rootURL
+    rootURL: _lyrvappConfigEnvironment['default'].rootURL
   });
 
   Router.map(function () {});
 
   exports['default'] = Router;
 });
-define("split-app/templates/application", ["exports"], function (exports) {
+define("lyrvapp/templates/application", ["exports"], function (exports) {
   "use strict";
 
   exports["default"] = Ember.HTMLBars.template({ "id": "lFDMjAPQ", "block": "{\"statements\":[[\"append\",[\"unknown\",[\"book-ends\"]],false],[\"text\",\"\\n\\n\"],[\"open-element\",\"h3\",[]],[\"flush-element\"],[\"text\",\"List your RV\"],[\"close-element\"],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "templates/application.hbs" } });
-});
-define('split-app/resolver', ['exports', 'ember-resolver'], function (exports, _emberResolver) {
-  exports['default'] = _emberResolver['default'];
 });
 /* jshint ignore:start */
 
@@ -52,8 +54,8 @@ define('split-app/resolver', ['exports', 'ember-resolver'], function (exports, _
 
 /* jshint ignore:start */
 
-define('split-app/config/environment', ['ember'], function(Ember) {
-  var exports = {'default': {"modulePrefix":"split-app","environment":"development","rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"split-app","version":"0.0.0+23b5f9e5"},"exportApplicationGlobal":true}};Object.defineProperty(exports, '__esModule', {value: true});return exports;
+define('lyrvapp/config/environment', ['ember'], function(Ember) {
+  var exports = {'default': {"modulePrefix":"split-app","environment":"development","rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"split-app","version":"0.0.0+210d3ffa"},"exportApplicationGlobal":true}};Object.defineProperty(exports, '__esModule', {value: true});return exports;
 });
 
 /* jshint ignore:end */
@@ -61,7 +63,7 @@ define('split-app/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("split-app/app")["default"].create({"name":"split-app","version":"0.0.0+23b5f9e5"});
+  require("lyrvapp/app")["default"].create({"name":"split-app","version":"0.0.0+210d3ffa"});
 }
 
 /* jshint ignore:end */

@@ -9,10 +9,10 @@ const WatchedDir = require('broccoli-source').WatchedDir;
 const p = require('ember-cli-preprocess-registry/preprocessors');
 
 const preprocessTemplates = p.preprocessTemplates;
-const preprocessJs  = p.preprocessJs;
 
 const debug = require('broccoli-stew').debug;
 const rename = require('broccoli-stew').rename;
+const map = require('broccoli-stew').map;
 
 const featureApps = require('./config/feature-apps');
 
@@ -59,17 +59,24 @@ const buildFeatureApps = function(feature, app, tree) {
   let appFilesBabel = new Babel(new Funnel(processTemplates, {
     include: ['**/*.js'],
     srcDir: '/',
-    destDir: 'split-app',
+    destDir: feature,
     annotation: 'Funnel (' + feature + ')'
   }), app._prunedBabelOptions());
 
-  let featureFolder = rename(appFilesBabel, 'split-app', feature);
-  let mergedFiles = mergeTrees([featureFolder, tree]);
-  let headerTree = new Funnel(mergedFiles, {
+  let updatedConfig = map(new Funnel(tree), 'vendor/ember-cli/*.js', function(content, relativePath) {
+    let newContent = content.replace(/split-app/i, feature);
+
+    return newContent;
+  });
+
+  // let featureFolder = rename(appFilesBabel, 'split-app', feature);
+  let mergedFiles = mergeTrees([appFilesBabel, tree, updatedConfig], {overwrite: true});
+  let featureTree = new Funnel(mergedFiles, {
     include: featureApps[feature]
   });
 
-  return headerApp = concat(headerTree, {
+
+  let concatFeatureApp =  concat(featureTree, {
     allowNone: true,
     outputFile: 'assets/' + feature + '.js',
     wrapInFunction: false,
@@ -87,10 +94,12 @@ const buildFeatureApps = function(feature, app, tree) {
       'vendor/ember-cli/app-boot.js'
     ]
   });
+
+  return concatFeatureApp;
 }
 
 module.exports = function(defaults) {
-  var app = new EmberApp(defaults, {
+  const app = new EmberApp(defaults, {
     storeConfigInMeta: false
   });
 
