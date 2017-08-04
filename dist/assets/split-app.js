@@ -270,7 +270,7 @@ define("split-app/templates/details", ["exports"], function (exports) {
 /* jshint ignore:start */
 
 define('split-app/config/environment', ['ember'], function(Ember) {
-  var exports = {'default': {"modulePrefix":"split-app","environment":"development","rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"split-app","version":"0.0.0+210d3ffa"},"exportApplicationGlobal":true}};Object.defineProperty(exports, '__esModule', {value: true});return exports;
+  var exports = {'default': {"modulePrefix":"split-app","environment":"development","rootURL":"/","locationType":"auto","EmberENV":{"FEATURES":{},"EXTEND_PROTOTYPES":{"Date":false}},"APP":{"name":"split-app","version":"0.0.0+72d53e20"},"exportApplicationGlobal":true}};Object.defineProperty(exports, '__esModule', {value: true});return exports;
 });
 
 /* jshint ignore:end */
@@ -278,7 +278,7 @@ define('split-app/config/environment', ['ember'], function(Ember) {
 /* jshint ignore:start */
 
 if (!runningTests) {
-  require("split-app/app")["default"].create({"name":"split-app","version":"0.0.0+210d3ffa"});
+  require("split-app/app")["default"].create({"name":"split-app","version":"0.0.0+72d53e20"});
 }
 
 /* jshint ignore:end */
