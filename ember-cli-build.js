@@ -106,17 +106,21 @@ module.exports = function(defaults) {
   });
 
   let headerappTrees = new WatchedDir(app._resolveLocal('headerapp'));
-  let debugheaderAppTrees = debug(headerappTrees, {name: 'headerappTrees'});
+  let headerappConfig = app._resolveLocal('headerapp');
+  let debugheaderAppTrees = debug(app._configTree(), { name: 'appConfig' });
+
 
   let headerApp = new EmberApp(defaults, {
-    trees: debugheaderAppTrees,
+    trees: headerappTrees,
     name: 'headerapp',
+    configPath: 'headerapp/config/environment',
     storeConfigInMeta: false
   });
 
+  let debugheaderAppConfig = debug(headerApp._configTree(), { name: 'headerappConfig' });
   let headerAppTrees = debug(headerApp.toTree(), {name: 'headerApp'})
 
-  return mergeTrees([app.toTree(), headerAppTrees], {
+  return mergeTrees([app.toTree(), headerAppTrees, debugheaderAppConfig, debugheaderAppTrees], {
     overwrite: true
   });
 };
