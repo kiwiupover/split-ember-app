@@ -1,0 +1,3 @@
+define("split-app/templates/application", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template({ "id": "B5Xw8b7L", "block": "{\"statements\":[[\"append\",[\"unknown\",[\"header-nav\"]],false],[\"text\",\"\\n\"],[\"append\",[\"unknown\",[\"book-ends\"]],false],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/templates/application.hbs" } });
+});

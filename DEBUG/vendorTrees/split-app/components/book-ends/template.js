@@ -1,0 +1,3 @@
+define("split-app/components/book-ends/template", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template({ "id": "7OhrU+ot", "block": "{\"statements\":[[\"text\",\"jflaskfdafdajfd;lsajfds;lafdasjf;dsa;skda;sdjfsa\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/components/book-ends/template.hbs" } });
+});

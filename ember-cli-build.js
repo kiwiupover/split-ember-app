@@ -1,5 +1,6 @@
 /*jshint node:true*/
 /* global require, module */
+const path = require('path');
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
 const mergeTrees = require('broccoli-merge-trees');
 const concat = require('broccoli-concat');
@@ -99,28 +100,68 @@ const featureApps = require('./config/feature-apps');
 //
 //   return concatFeatureApp;
 // }
+const _resolveLocal = function(projectRoot, to) {
+  return path.join(projectRoot, to);
+}
 
 module.exports = function(defaults) {
-  let app = new EmberApp(defaults, {
-    storeConfigInMeta: false
-  });
+  let headerapp = new WatchedDir(_resolveLocal(defaults.project.root, 'headerapp'));
 
-  let headerappTrees = new WatchedDir(app._resolveLocal('headerapp'));
-  let headerappConfig = app._resolveLocal('headerapp');
-  let debugheaderAppTrees = debug(app._configTree(), { name: 'appConfig' });
-
-
+  let headerAppTrees = new Funnel(headerapp);
+  let debugheaderAppTrees = debug(headerAppTrees, { name: 'headerAppTrees' });
   let headerApp = new EmberApp(defaults, {
-    trees: headerappTrees,
+    trees: debugheaderAppTrees,
     name: 'headerapp',
     configPath: 'headerapp/config/environment',
     storeConfigInMeta: false
   });
 
-  let debugheaderAppConfig = debug(headerApp._configTree(), { name: 'headerappConfig' });
-  let headerAppTrees = debug(headerApp.toTree(), {name: 'headerApp'})
 
-  return mergeTrees([app.toTree(), headerAppTrees, debugheaderAppConfig, debugheaderAppTrees], {
+  let headerAppJS = new Funnel(headerApp.toTree(), {
+    include: ['assets/headerapp.*'],
+    exclude: ['**/*.css']
+  });
+
+
+  let app = new EmberApp(defaults, {
+    storeConfigInMeta: false
+  });
+
+  debugger;
+
+  // app._concatFiles(tree, options) {
+  //   options.sourceMapConfig = this.options.sourcemaps;
+  //
+  //   return concat(tree, options);
+  // }
+
+  app._concatFiles = function(tree, options) {
+    if (options && options.annotation === 'Concat: App') {
+      options.sourcemaps= {
+        enabled: true
+      }
+
+      let debugvendorTrees = debug(tree, { name: 'vendorTrees' });
+
+      return mergeTrees([
+        tree,
+        debugvendorTrees
+      ], {
+        overwrite: true,
+        annotation: 'TreeMerger (featureApps)'
+      });
+    }
+
+    return concat(tree, options);
+  };
+
+  let appTree = new Funnel(app.toTree());
+
+
+  // let featureFolder = rename(debugvendorTrees, 'split-app', feature);
+
+
+  return mergeTrees([appTree, headerAppJS], {
     overwrite: true
   });
 };
