@@ -47,35 +47,9 @@ module.exports = function(defaults) {
     storeConfigInMeta: false
   });
 
-  // app._concatFiles(tree, options) {
-  //   options.sourceMapConfig = this.options.sourcemaps;
-  //
-  //   return concat(tree, options);
-  // }
-
-  app._concatFiles = function(tree, options) {
-    if (options && options.annotation === 'Concat: App') {
-      options.sourcemaps= {
-        enabled: true
-      }
-
-      let debugvendorTrees = debug(tree, { name: 'vendorTrees' });
-
-      return mergeTrees([
-        tree,
-        debugvendorTrees
-      ], {
-        overwrite: true,
-        annotation: 'TreeMerger (featureApps)'
-      });
-    }
-
-    return concat(tree, options);
-  };
-
   let appTree = new Funnel(app.toTree());
 
-  return mergeTrees([appTree, headerAppJS, debugheaderAppTrees], {
+  return mergeTrees([appTree, headerAppJS], {
     overwrite: true
   });
 };
