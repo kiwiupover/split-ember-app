@@ -1,3 +1,0 @@
-define("split-app/components/header-nav/template", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template({ "id": "cGRfzAiS", "block": "{\"statements\":[[\"open-element\",\"h1\",[]],[\"flush-element\"],[\"text\",\"HEADER HEADER HEADER\"],[\"close-element\"],[\"text\",\"\\n\"]],\"locals\":[],\"named\":[],\"yields\":[],\"blocks\":[],\"hasPartials\":false}", "meta": { "moduleName": "split-app/components/header-nav/template.hbs" } });
-});
