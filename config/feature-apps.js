@@ -1,9 +1,9 @@
 module.exports = {
   'headerapp': [
-    // 'split-app/helpers/**.*',
-    // 'split-app/initializers/**.*',
-    // 'split-app/instance-initializers/**.*',
-    // 'split-app/services/**.*',
+    'split-app/helpers/**.*',
+    'split-app/initializers/**.*',
+    'split-app/instance-initializers/**.*',
+    'split-app/services/**.*',
     'headerapp/templates/application.js',
     'headerapp/app.js',
     'headerapp/router.js',

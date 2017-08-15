@@ -15,6 +15,7 @@ const preprocessJs  = p.preprocessJs;
 const debug = require('broccoli-stew').debug;
 const rename = require('broccoli-stew').rename;
 const map = require('broccoli-stew').map;
+const mv = require('broccoli-stew').mv;
 
 const featureApps = require('./config/feature-apps');
 
@@ -23,25 +24,26 @@ const _resolveLocal = function(projectRoot, to) {
 }
 
 module.exports = function(defaults) {
+  let headerapp = new WatchedDir(_resolveLocal(defaults.project.root, 'headerapp/app'));
 
-  let headerapp = new WatchedDir(_resolveLocal(defaults.project.root, 'headerapp'));
+  let appTrees = new WatchedDir(_resolveLocal(defaults.project.root, 'app'));
 
-  let headerAppTrees = new Funnel(headerapp);
-  let debugheaderAppTrees = debug(headerAppTrees, { name: 'headerAppTrees' });
+  let headerAppTrees = mergeTrees([headerapp, appTrees], {
+    overwrite: true,
+  });
 
   let headerApp = new EmberApp(defaults, {
-    trees: debugheaderAppTrees,
+    trees: headerAppTrees,
+    appTree: headerAppTrees,
     name: 'headerapp',
     configPath: 'headerapp/config/environment',
     storeConfigInMeta: false
   });
 
-
   let headerAppJS = new Funnel(headerApp.toTree(), {
     include: ['assets/headerapp.*'],
     exclude: ['**/*.css']
   });
-
 
   let app = new EmberApp(defaults, {
     storeConfigInMeta: false
