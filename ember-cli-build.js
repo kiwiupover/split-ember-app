@@ -28,13 +28,15 @@ module.exports = function(defaults) {
 
   let appTrees = new WatchedDir(_resolveLocal(defaults.project.root, 'app'));
 
-  let headerAppTrees = mergeTrees([headerapp, appTrees], {
-    overwrite: true,
+  let headerAppTrees = mergeTrees([appTrees, headerapp], {
+    overwrite: true
   });
 
+  let debugheaderAppTrees = debug(headerAppTrees, { name: 'headerAppTrees'});
+
   let headerApp = new EmberApp(defaults, {
-    trees: headerAppTrees,
-    appTree: headerAppTrees,
+    trees: debugheaderAppTrees,
+    appTree: debugheaderAppTrees,
     name: 'headerapp',
     configPath: 'headerapp/config/environment',
     storeConfigInMeta: false
@@ -51,7 +53,7 @@ module.exports = function(defaults) {
 
   let appTree = new Funnel(app.toTree());
 
-  return mergeTrees([appTree, headerAppJS], {
+  return mergeTrees([appTree, headerAppJS, debugheaderAppTrees], {
     overwrite: true
   });
 };
